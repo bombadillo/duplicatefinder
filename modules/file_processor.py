@@ -1,6 +1,8 @@
-import collections, hashlib
+import collections, hashlib, threading
 import modules.file_writer as file_writer
 from modules.config import Config
+
+lock = threading.Lock()
 
 def process(file_name):
     current_line_number = 0
@@ -19,4 +21,5 @@ def process(file_name):
                 file_writer.write_string(string_to_write, Config.output_file)
             else:
                 d[k].append(v)
-    return dups_found
+    with lock:
+        print '{0} duplicates found in file {1}'.format(dups_found, file_name)
