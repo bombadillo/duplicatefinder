@@ -25,6 +25,6 @@ class App:
         for filePath in files:
             self.__queue.put(filePath)
 
-    def add_queue_terminators():
+    def add_queue_terminators(self):
         for i in range(self.WORKERS):
             self.__queue.put(None)
