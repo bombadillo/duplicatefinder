@@ -11,5 +11,6 @@ class FileProcessorWorker(threading.Thread):
         while 1:
             filePath = self.__queue.get()
             if filePath is None:
-                break            
+                break
             file_processor.process(filePath)
+            self.__queue.task_done()

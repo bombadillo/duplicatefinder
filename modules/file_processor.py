@@ -5,6 +5,8 @@ from modules.config import Config
 lock = threading.Lock()
 
 def process(file_name):
+    with lock:
+        print 'Processing file {0}'.format(file_name)
     current_line_number = 0
     dups_found = 0
     d = collections.defaultdict(list)
@@ -17,7 +19,7 @@ def process(file_name):
             if v in d[k]:
                 dups_found += 1
                 line = line.replace('\n', '')
-                string_to_write = 'Line No: {0} - {1}'.format(current_line_number, line)
+                string_to_write = '"{0}" on Line {1} in {2}{3}'.format(line, current_line_number, file_name, Config.new_line)
                 file_writer.write_string(string_to_write, Config.output_file)
             else:
                 d[k].append(v)

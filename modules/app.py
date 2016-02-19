@@ -1,20 +1,30 @@
-import Queue
+import Queue, time, multiprocessing
 import modules.file_to_process_retriever as file_to_process_retriever
 from modules.file_processor_worker import FileProcessorWorker
 
 class App:
 
-    dups_found = 0
-    WORKERS = 2
+    WORKERS = multiprocessing.cpu_count()
 
     def start(self, arguments):
-        queue = Queue.Queue(0)
-        for i in range(self.WORKERS):
-            FileProcessorWorker(queue).start()
+        print 'App started {0}'.format(time.strftime("%Y-%m-%d %H:%M:%S"))
+        self.__arguments = arguments
+        self.__queue = Queue.Queue(0)
+        self.start_workers()
+        self.add_files_to_queue()
+        self.__queue.join()
+        self.add_queue_terminators()
+        print 'App ended {0}'.format(time.strftime("%Y-%m-%d %H:%M:%S"))
 
-        files = file_to_process_retriever.retrieve(arguments[1])
+    def start_workers(self):
+        for i in range(self.WORKERS):
+            FileProcessorWorker(self.__queue).start()
+
+    def add_files_to_queue(self):
+        files = file_to_process_retriever.retrieve(self.__arguments[1])
         for filePath in files:
-            queue.put(filePath)
+            self.__queue.put(filePath)
 
+    def add_queue_terminators():
         for i in range(self.WORKERS):
-            queue.put(None)
+            self.__queue.put(None)
